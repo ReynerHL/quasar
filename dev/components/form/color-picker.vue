@@ -1,6 +1,20 @@
 <template>
   <div>
     <div class="layout-padding">
+
+      {{ inputModelRgb }} <q-btn @click="inputModelRgb = null" label="Clear" />
+      <p>Immediate</p>
+      <q-color v-model="inputModelRgb" stack-label="simple" />
+      <q-color v-model="inputModelRgb" clearable stack-label="clearable" />
+      <q-color v-model="inputModelRgb" default-selection="#ccc" stack-label="default-selection" />
+      <q-color v-model="inputModelRgb" default-selection="#ccc" clearable stack-label="default-selection, clearable" />
+      <p>Lazy</p>
+      <q-color :value="inputModelRgb" @change="val => inputModelRgb = val" stack-label="simple" />
+      <q-color :value="inputModelRgb" @change="val => inputModelRgb = val" clearable stack-label="clearable" />
+      <q-color :value="inputModelRgb" @change="val => inputModelRgb = val" default-selection="#ccc" stack-label="default-selection" />
+      <q-color :value="inputModelRgb" @change="val => inputModelRgb = val" default-selection="#ccc" clearable stack-label="default-selection, clearable" />
+
+      <br><br>
       <q-btn color="primary" label="Set to yellow" @click="setToYellow"/>
 
       <div class="row gutter-md" style="width: 550px">
@@ -54,7 +68,6 @@
 
       <h4>Lazy Input</h4>
       <q-color :value="inputModelHex" @change="val => { inputModelHex = val; log('@change', val)}" @input="value => log('@input', value)" clearable />
-      <q-color :value="inputModelRgb" @change="val => inputModelRgb = val" clearable />
 
       <h4>Type: <small>{{modelVar}}</small></h4>
       <q-color v-model="modelVar" clearable @input="value => log('@input', value)" @change="value => log('@change', value)" stack-label="Type 'auto'" type="auto" />
