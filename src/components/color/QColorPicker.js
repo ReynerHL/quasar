@@ -15,9 +15,10 @@ export default {
     TouchPan
   },
   props: {
-    value: {
+    value: [String, Object],
+    defaultValue: {
       type: [String, Object],
-      required: true
+      default: '#000'
     },
     type: {
       type: String,
@@ -25,12 +26,13 @@ export default {
       validator: v => ['auto', 'hex', 'rgb', 'hexa', 'rgba'].includes(v)
     },
     disable: Boolean,
-    readonly: Boolean
+    readonly: Boolean,
+    dark: Boolean
   },
   data () {
     return {
       view: !this.value || typeof this.value === 'string' ? 'hex' : 'rgb',
-      model: this.__parseModel(this.value),
+      model: this.__parseModel(this.value || this.defaultValue),
       inputError: {
         hex: false,
         r: false,
@@ -42,7 +44,7 @@ export default {
   watch: {
     value: {
       handler (v) {
-        const model = this.__parseModel(v)
+        const model = this.__parseModel(v || this.defaultValue)
         if (model.hex !== this.model.hex) {
           this.model = model
         }
@@ -78,7 +80,7 @@ export default {
       }
       return this.isHex
         ? this.value.length > 7
-        : this.value.a !== void 0
+        : this.value && this.value.a !== void 0
     },
     swatchStyle () {
       return {
@@ -110,7 +112,7 @@ export default {
   render (h) {
     return h('div', {
       staticClass: 'q-color',
-      'class': { disabled: this.disable }
+      'class': { disabled: this.disable, 'q-color-dark': this.dark }
     }, [
       this.__getSaturation(h),
       this.__getSliders(h),
@@ -203,19 +205,16 @@ export default {
               type: 'number',
               min: 0,
               max,
-              readonly: !this.editable
+              readonly: !this.editable,
+              tabindex: this.disable ? 0 : -1
             },
             staticClass: 'full-width text-center q-no-input-spinner',
             domProps: {
               value: Math.round(this.model[type])
             },
             on: {
-              input: evt => {
-                this.__onNumericChange(evt, type, max)
-              },
-              blur: evt => {
-                this.__onNumericChange(evt, type, max, true)
-              }
+              input: evt => this.__onNumericChange(evt, type, max),
+              blur: evt => this.editable && this.__onNumericChange(evt, type, max, true)
             }
           }),
           h('div', { staticClass: 'q-color-label text-center uppercase' }, [
@@ -232,11 +231,11 @@ export default {
               domProps: { value: this.model.hex },
               attrs: {
                 readonly: !this.editable,
-                tabindex: this.editable ? 0 : -1
+                tabindex: this.disable ? 0 : -1
               },
               on: {
                 input: this.__onHexChange,
-                blur: evt => this.__onHexChange(evt, true)
+                blur: evt => this.editable && this.__onHexChange(evt, true)
               },
               staticClass: 'full-width text-center uppercase'
             }),
@@ -255,7 +254,7 @@ export default {
           h(QBtn, {
             props: {
               flat: true,
-              color: 'grey-7'
+              disable: this.disable
             },
             on: {
               click: this.__nextInputView

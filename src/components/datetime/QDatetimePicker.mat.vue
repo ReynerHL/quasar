@@ -7,21 +7,21 @@
           <span
             :class="{active: view === 'month'}"
             class="q-datetime-link small col-auto col-md-12"
-            @click="view = 'month'"
+            @click="!disable && (view = 'month')"
           >
             {{ monthString }}
           </span>
           <span
             :class="{active: view === 'day'}"
             class="q-datetime-link col-auto col-md-12"
-            @click="view = 'day'"
+            @click="!disable && (view = 'day')"
           >
             {{ day }}
           </span>
           <span
             :class="{active: view === 'year'}"
             class="q-datetime-link small col-auto col-md-12"
-            @click="view = 'year'"
+            @click="!disable && (view = 'year')"
           >
             {{ year }}
           </span>
@@ -35,7 +35,7 @@
           <span
             :class="{active: view === 'hour'}"
             class="q-datetime-link col-auto col-md-12"
-            @click="view = 'hour'"
+            @click="!disable && (view = 'hour')"
           >
             {{ __pad(hour, '&nbsp;&nbsp;') }}
           </span>
@@ -43,7 +43,7 @@
           <span
             :class="{active: view === 'minute'}"
             class="q-datetime-link col-auto col-md-12"
-            @click="view = 'minute'"
+            @click="!disable && (view = 'minute')"
           >
             {{ __pad(minute) }}
           </span>
@@ -74,6 +74,7 @@
             flat
             class="q-datetime-btn full-width"
             :class="{active: n + yearMin === year}"
+            :disable="!editable"
             @click="setYear(n + yearMin)"
           >
             {{ n + yearMin }}
@@ -90,6 +91,7 @@
             flat
             class="q-datetime-btn full-width"
             :class="{active: month === index + monthMin}"
+            :disable="!editable"
             @click="setMonth(index + monthMin, true)"
           >
             {{ $q.i18n.date.months[index + monthMin - 1] }}
@@ -106,12 +108,12 @@
               dense
               flat
               :color="color"
-              @click="setMonth(month - 1)"
-              :disabled="beforeMinDays"
               :icon="$q.icon.datetime.arrowLeft"
               :repeatTimeout="__getRepeatEasing()"
+              :disable="beforeMinDays > 0 || disable || readonly"
+              @click="setMonth(month - 1)"
             ></q-btn>
-            <div class="col q-datetime-dark">
+            <div class="col">
               {{ monthStamp }}
             </div>
             <q-btn
@@ -119,10 +121,10 @@
               dense
               flat
               :color="color"
-              @click="setMonth(month + 1)"
-              :disabled="afterMaxDays"
               :icon="$q.icon.datetime.arrowRight"
               :repeatTimeout="__getRepeatEasing()"
+              :disable="afterMaxDays > 0 || disable || readonly"
+              @click="setMonth(month + 1)"
             ></q-btn>
           </div>
           <div class="q-datetime-weekdays row items-center justify-start">
@@ -139,10 +141,11 @@
               v-for="monthDay in daysInterval"
               :key="`md${monthDay}`"
               class="row items-center content-center justify-center cursor-pointer"
-              :class="{
+              :class="[color && monthDay === day ? `text-${color}` : null, {
                 'q-datetime-day-active': monthDay === day,
-                'q-datetime-day-today': monthDay === today
-              }"
+                'q-datetime-day-today': monthDay === today,
+                'disabled': !editable
+              }]"
               @click="setDay(monthDay)"
             >
               <span>{{ monthDay }}</span>
@@ -248,7 +251,7 @@ export default {
   name: 'q-datetime-picker',
   mixins: [DateMixin, FieldParentMixin],
   props: {
-    defaultSelection: [String, Number, Date],
+    defaultValue: [String, Number, Date],
     disable: Boolean,
     readonly: Boolean
   },
@@ -278,12 +281,9 @@ export default {
   computed: {
     classes () {
       const cls = []
-      if (this.disable) {
-        cls.push('disabled')
-      }
-      if (this.readonly) {
-        cls.push('readonly')
-      }
+      this.disable && cls.push('disabled')
+      this.readonly && cls.push('readonly')
+      this.dark && cls.push('q-datetime-dark')
       if (this.color) {
         cls.push(`text-${this.color}`)
       }
@@ -343,8 +343,8 @@ export default {
     },
     daysInterval () {
       let after = this.pmax === null || this.afterMaxDays === false ? 0 : this.afterMaxDays
-      if (this.beforeMinDays || after) {
-        let min = this.beforeMinDays ? this.beforeMinDays + 1 : 1
+      if (this.beforeMinDays > 0 || after) {
+        let min = this.beforeMinDays > 0 ? this.beforeMinDays + 1 : 1
         return Array.apply(null, {length: this.daysInMonth - min - after + 1}).map((day, index) => {
           return index + min
         })

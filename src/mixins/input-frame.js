@@ -20,6 +20,8 @@ export default {
     error: Boolean,
     warning: Boolean,
     disable: Boolean,
+    readonly: Boolean,
+    clearable: Boolean,
     color: {
       type: String,
       default: 'primary'
@@ -27,7 +29,10 @@ export default {
     align: {
       default: 'left'
     },
-    dark: Boolean,
+    dark: {
+      type: Boolean,
+      default: null
+    },
     before: marginal,
     after: marginal,
     inverted: Boolean,

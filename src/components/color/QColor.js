@@ -33,7 +33,7 @@ export default {
       type: String,
       default: 'primary'
     },
-    defaultSelection: {
+    defaultValue: {
       type: [String, Object],
       default: null
     },
@@ -44,18 +44,15 @@ export default {
     },
     displayValue: String,
     placeholder: String,
-    clearable: Boolean,
     okLabel: String,
-    cancelLabel: String,
-    disable: Boolean,
-    readonly: Boolean
+    cancelLabel: String
   },
   data () {
     let data = this.isPopover ? {} : {
       transition: __THEME__ === 'ios' ? 'q-modal-bottom' : 'q-modal'
     }
     data.focused = false
-    data.model = clone(this.value || this.defaultSelection)
+    data.model = clone(this.value || this.defaultValue)
     return data
   },
   computed: {
@@ -81,7 +78,7 @@ export default {
     show () {
       if (!this.disable) {
         if (!this.focused) {
-          this.__setModel(this.value || this.defaultSelection)
+          this.__setModel(this.value || this.defaultValue)
         }
         return this.$refs.popup.show()
       }
@@ -104,10 +101,10 @@ export default {
       }
     },
     __onFocus () {
-      if (this.focused) {
+      if (this.disable || this.focused) {
         return
       }
-      this.__setModel(this.value || this.defaultSelection)
+      this.__setModel(this.value || this.defaultValue)
       this.focused = true
       this.$emit('focus')
     },
@@ -153,7 +150,8 @@ export default {
               value: this.model || '#000',
               disable: this.disable,
               readonly: this.readonly,
-              type: this.type
+              type: this.type,
+              dark: this.dark
             }, this.$attrs),
             on: {
               input: v => this.$nextTick(() => this.__setModel(v))

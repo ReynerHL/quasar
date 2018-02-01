@@ -36,7 +36,7 @@
         v-for="{label, value, color: optColor, icon: optIcon, rightIcon: optIconRight, avatar: optAvatar, disable: optDisable} in selectedOptions"
         :key="label"
         small
-        :closable="!disable && !optDisable"
+        :closable="!disable && !readonly && !optDisable"
         :color="computedChipColor(optColor)"
         :text-color="computedChipTextColor(optColor)"
         :icon="optIcon"
@@ -57,7 +57,7 @@
     ></div>
 
     <q-icon
-      v-if="!disable && clearable && length"
+      v-if="!disable && !readonly && clearable && length"
       slot="after"
       name="cancel"
       class="q-if-control"
@@ -72,6 +72,7 @@
       :offset="[0, 10]"
       :anchor-click="false"
       class="column no-wrap"
+      :class="dark ? 'bg-dark' : null"
       @show="__onFocus"
       @hide="__onClose"
     >
@@ -84,6 +85,7 @@
           :placeholder="filterPlaceholder || $q.i18n.label.filter"
           :debounce="100"
           :color="color"
+          :dark="dark"
           icon="filter_list"
           style="min-height: 50px; padding: 10px;"
         />
@@ -91,6 +93,7 @@
 
       <q-list
         :separator="separator"
+        :dark="dark"
         class="no-border scroll"
       >
         <template v-if="multiple">
@@ -106,7 +109,8 @@
             <q-toggle
               v-if="toggle"
               slot="right"
-              :color="opt.color || color"
+              :color="opt.color || (dark !== false ? color : null)"
+              :dark="dark"
               :keep-color="!!opt.color"
               :value="optModel[opt.index]"
               :disable="opt.disable"
@@ -115,7 +119,8 @@
             <q-checkbox
               v-else
               slot="left"
-              :color="opt.color || color"
+              :color="opt.color || (dark !== false ? color : null)"
+              :dark="dark"
               :keep-color="!!opt.color"
               :value="optModel[opt.index]"
               :disable="opt.disable"
@@ -307,14 +312,14 @@ export default {
         case 32: // SPACE key
           stopAndPrevent(e)
           return this.show()
-        case 8: // Backspace key
+        case 8: // BACKSPACE key
           if (this.editable && this.clearable && this.actualValue.length) {
             this.clear()
           }
       }
     },
     __onFocus () {
-      if (this.focused) {
+      if (this.disable || this.focused) {
         return
       }
       this.focused = true
@@ -394,15 +399,17 @@ export default {
         if (this.frameColor) {
           return this.color
         }
-        return this.dark !== false ? 'white' : null
+        return this.dark === false ? 'dark' : 'white'
       }
       return optColor || this.color
     },
     computedChipTextColor (optColor) {
       if (this.inverted) {
-        return optColor || this.frameColor || this.color
+        if (optColor || this.frameColor) {
+          return optColor || this.frameColor
+        }
+        return this.dark === false ? 'white' : optColor || this.color
       }
-      return this.dark !== false ? 'white' : null
     }
   }
 }

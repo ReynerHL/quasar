@@ -35,7 +35,7 @@ export default {
       transition: __THEME__ === 'ios' ? 'q-modal-bottom' : 'q-modal'
     }
     data.focused = false
-    data.model = clone(isValid(this.value) ? this.value : this.defaultSelection)
+    data.model = clone(isValid(this.value) ? this.value : this.defaultValue)
     return data
   },
   computed: {
@@ -72,7 +72,7 @@ export default {
     show () {
       if (!this.disable) {
         if (!this.focused) {
-          this.__setModel(isValid(this.value) ? this.value : this.defaultSelection)
+          this.__setModel(isValid(this.value) ? this.value : this.defaultValue)
         }
         return this.$refs.popup.show()
       }
@@ -95,6 +95,9 @@ export default {
       }
     },
     __onFocus () {
+      if (this.disable || this.focused) {
+        return
+      }
       if (this.defaultView) {
         const target = this.$refs.target
         if (target.view !== this.defaultView) {
@@ -104,10 +107,7 @@ export default {
           target.__scrollView()
         }
       }
-      if (this.focused) {
-        return
-      }
-      this.__setModel(isValid(this.value) ? this.value : this.defaultSelection)
+      this.__setModel(isValid(this.value) ? this.value : this.defaultValue)
       this.focused = true
       this.$emit('focus')
     },
@@ -158,7 +158,8 @@ export default {
               format24h: this.format24h,
               firstDayOfWeek: this.firstDayOfWeek,
               defaultView: this.defaultView,
-              color: this.color,
+              color: !this.inverted || this.dark !== false ? this.color : null,
+              dark: this.dark,
               value: this.model,
               disable: this.disable,
               readonly: this.readonly
@@ -219,6 +220,7 @@ export default {
         error: this.error,
         warning: this.warning,
         disable: this.disable,
+        readonly: this.readonly,
         inverted: this.inverted,
         dark: this.dark,
         hideUnderline: this.hideUnderline,
