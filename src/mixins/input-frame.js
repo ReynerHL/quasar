@@ -37,7 +37,8 @@ export default {
     hideUnderline: Boolean,
     clearValue: {
       default: null
-    }
+    },
+    noParentField: Boolean
   },
   computed: {
     inputPlaceholder () {
@@ -63,6 +64,18 @@ export default {
     hasWarning () {
       // error is the higher priority
       return !!(!this.hasError && ((!this.noParentField && this.field && this.field.warning) || this.warning))
+    },
+    fakeInputValue () {
+      return this.actualValue || this.actualValue === 0
+        ? this.actualValue
+        : this.placeholder
+    },
+    fakeInputClasses () {
+      const hasValue = this.actualValue || this.actualValue === 0
+      return [this.alignClass, {
+        invisible: (this.stackLabel || this.floatLabel) && !this.labelIsAbove && !hasValue,
+        'q-input-target-placeholder': !hasValue && this.inputPlaceholder
+      }]
     }
   },
   methods: {

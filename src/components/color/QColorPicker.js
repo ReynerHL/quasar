@@ -1,6 +1,6 @@
 import { QBtn } from '../btn'
 import { QSlider } from '../slider'
-import FieldParentMixin from '../../mixins/field-parent'
+import ParentFieldMixin from '../../mixins/parent-field'
 import TouchPan from '../../directives/touch-pan'
 import { stopAndPrevent } from '../../utils/event'
 import throttle from '../../utils/throttle'
@@ -10,7 +10,7 @@ import { hexToRgb, rgbToHex, rgbToHsv, hsvToRgb } from '../../utils/colors'
 
 export default {
   name: 'q-color-picker',
-  mixins: [FieldParentMixin],
+  mixins: [ParentFieldMixin],
   directives: {
     TouchPan
   },
@@ -82,7 +82,7 @@ export default {
         ? this.value.length > 7
         : this.value && this.value.a !== void 0
     },
-    swatchStyle () {
+    swatchColor () {
       return {
         backgroundColor: `rgba(${this.model.r},${this.model.g},${this.model.b},${(this.model.a === void 0 ? 100 : this.model.a) / 100})`
       }
@@ -155,9 +155,10 @@ export default {
         staticClass: 'q-color-sliders row items-center'
       }, [
         h('div', {
-          staticClass: 'q-color-swatch q-mt-sm q-ml-sm q-mb-sm non-selectable overflow-hidden',
-          style: this.swatchStyle
-        }),
+          staticClass: 'q-color-swatch q-mt-sm q-ml-md q-mb-sm non-selectable overflow-hidden'
+        }, [
+          h('div', { style: this.swatchColor, staticClass: 'fit' })
+        ]),
         h('div', { staticClass: 'col q-pa-sm' }, [
           h('div', { staticClass: 'q-color-hue non-selectable' }, [
             h(QSlider, {

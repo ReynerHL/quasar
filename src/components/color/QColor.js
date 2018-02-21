@@ -59,15 +59,19 @@ export default {
       if (this.displayValue) {
         return this.displayValue
       }
-      if (!this.value) {
-        return this.placeholder || ''
-      }
 
       if (this.value) {
         return typeof this.value === 'string'
           ? this.value
           : `rgb${this.value.a !== void 0 ? 'a' : ''}(${this.value.r},${this.value.g},${this.value.b}${this.value.a !== void 0 ? `,${this.value.a / 100}` : ''})`
       }
+
+      return ''
+    },
+    modalBtnColor () {
+      return this.$q.theme === 'mat'
+        ? this.color
+        : (this.dark ? 'light' : 'dark')
     }
   },
   methods: {
@@ -160,12 +164,13 @@ export default {
 
       if (modal) {
         child[__THEME__ === 'mat' ? 'push' : 'unshift'](h('div', {
-          staticClass: 'modal-buttons modal-buttons-top row full-width'
+          staticClass: 'modal-buttons modal-buttons-top row full-width',
+          'class': this.dark ? 'bg-black' : null
         }, [
           h('div', { staticClass: 'col' }),
           h(QBtn, {
             props: {
-              color: this.color,
+              color: this.modalBtnColor,
               flat: true,
               label: this.cancelLabel || this.$q.i18n.label.cancel,
               waitForRipple: true
@@ -175,7 +180,7 @@ export default {
           this.editable
             ? h(QBtn, {
               props: {
-                color: this.color,
+                color: this.modalBtnColor,
                 flat: true,
                 label: this.okLabel || this.$q.i18n.label.set,
                 waitForRipple: true
@@ -211,6 +216,7 @@ export default {
         before: this.before,
         after: this.after,
         color: this.color,
+        noParentField: this.noParentField,
 
         focused: this.focused,
         focusable: true,
@@ -223,17 +229,12 @@ export default {
         keydown: this.__handleKeyDown
       }
     }, [
-      h('input', {
-        staticClass: 'col q-input-target cursor-inherit non-selectable no-pointer-events',
-        'class': this.alignClass,
-        attrs: {
-          value: this.actualValue,
-          placeholder: this.inputPlaceholder,
-          readonly: true,
-          disabled: this.disable,
-          tabindex: -1
-        }
-      }),
+      h('div', {
+        staticClass: 'col q-input-target ellipsis',
+        'class': this.fakeInputClasses
+      }, [
+        this.fakeInputValue
+      ]),
 
       this.isPopover
         ? h(QPopover, {

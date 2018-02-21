@@ -33,6 +33,7 @@
     <h4>Dark</h4>
     <q-table
       dark
+      class="bg-black"
       :data="data"
       :columns="columns"
       title="Client side"
@@ -93,6 +94,7 @@
     <h4>Filter, Column selection</h4>
     <q-table
       :data="data"
+      title="Filter, Column selection"
       :columns="columns"
       :filter="filter"
       :visible-columns="visibleColumns"
@@ -100,9 +102,9 @@
       color="primary"
     >
       <template slot="top-right" slot-scope="props">
-        <q-search hide-underline color="primary" v-model="filter" />
-        <q-table-columns color="primary" class="on-right" v-model="visibleColumns" :columns="columns" />
-        <q-btn color="primary" flat round dense icon="more_vert" class="on-right">
+        <q-search hide-underline color="primary" class="q-mr-sm" v-model="filter" />
+        <q-table-columns color="primary" class="q-mr-sm" v-model="visibleColumns" :columns="columns" />
+        <q-btn color="primary" flat round dense icon="more_vert">
           <q-popover ref="popover">
             <q-list link>
               <q-item @click.native="$refs.popover.hide()">
@@ -235,7 +237,7 @@
         <q-btn color="secondary" flat label="Action 1" />
         <q-btn color="secondary" flat label="Action 2" />
         <div class="col"></div>
-        <q-btn color="negative" flat round size="sm" icon="delete" />
+        <q-btn color="negative" flat round dense icon="delete" />
       </template>
     </q-table>
   </div>

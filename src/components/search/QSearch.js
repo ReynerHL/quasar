@@ -13,7 +13,8 @@ export default {
       default: 300
     },
     icon: String,
-    placeholder: String
+    placeholder: String,
+    noIcon: Boolean
   },
   data () {
     return {
@@ -59,10 +60,14 @@ export default {
         : this.debounce
     },
     controlBefore () {
-      return this.before || [{
-        icon: this.icon || this.$q.icon.search.icon,
-        handler: this.focus
-      }]
+      return this.before || (
+        this.noIcon
+          ? null
+          : [{
+            icon: this.icon || this.$q.icon.search.icon,
+            handler: this.focus
+          }]
+      )
     },
     controlAfter () {
       if (this.after) {
@@ -96,6 +101,7 @@ export default {
         error: this.error,
         warning: this.warning,
         align: this.align,
+        noParentField: this.noParentField,
         floatLabel: this.floatLabel,
         stackLabel: this.stackLabel,
         prefix: this.prefix,

@@ -62,6 +62,11 @@ export default {
       }
 
       return formatDate(this.value, format, /* for reactiveness */ this.$q.i18n.date)
+    },
+    modalBtnColor () {
+      return this.$q.theme === 'mat'
+        ? this.color
+        : (this.dark ? 'light' : 'dark')
     }
   },
   methods: {
@@ -144,7 +149,6 @@ export default {
     },
 
     __getPicker (h, modal) {
-      const btnColor = !this.dark === !this.invertedLight ? this.color : (this.dark ? 'white' : 'dark')
       return [
         h(QDatetimePicker, {
           ref: 'target',
@@ -183,7 +187,7 @@ export default {
               h('div', { staticClass: 'col' }),
               h(QBtn, {
                 props: {
-                  color: btnColor,
+                  color: this.modalBtnColor,
                   flat: true,
                   label: this.cancelLabel || this.$q.i18n.label.cancel,
                   waitForRipple: true
@@ -193,7 +197,7 @@ export default {
               this.editable
                 ? h(QBtn, {
                   props: {
-                    color: btnColor,
+                    color: this.modalBtnColor,
                     flat: true,
                     label: this.okLabel || this.$q.i18n.label.set,
                     waitForRipple: true
@@ -230,6 +234,7 @@ export default {
         before: this.before,
         after: this.after,
         color: this.color,
+        noParentField: this.noParentField,
 
         focused: this.focused,
         focusable: true,
@@ -242,17 +247,12 @@ export default {
         keydown: this.__handleKeyDown
       }
     }, [
-      h('input', {
-        staticClass: 'col q-input-target cursor-inherit non-selectable no-pointer-events',
-        'class': this.alignClass,
-        attrs: {
-          value: this.actualValue,
-          placeholder: this.inputPlaceholder,
-          readonly: true,
-          disabled: this.disable,
-          tabindex: -1
-        }
-      }),
+      h('div', {
+        staticClass: 'col q-input-target ellipsis',
+        'class': this.fakeInputClasses
+      }, [
+        this.fakeInputValue
+      ]),
 
       this.isPopover
         ? h(QPopover, {

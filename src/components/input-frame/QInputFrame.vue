@@ -1,6 +1,6 @@
 <template>
   <div
-    class="q-if row no-wrap items-baseline relative-position"
+    class="q-if row no-wrap items-end relative-position"
     :class="classes"
     :tabindex="focusable && !disable ? 0 : -1"
     @click="__onClick"
@@ -61,11 +61,11 @@
 
 <script>
 import FrameMixin from '../../mixins/input-frame'
-import FieldParentMixin from '../../mixins/field-parent'
+import ParentFieldMixin from '../../mixins/parent-field'
 
 export default {
   name: 'q-input-frame',
-  mixins: [FrameMixin, FieldParentMixin],
+  mixins: [FrameMixin, ParentFieldMixin],
   props: {
     topAddons: Boolean,
     focused: Boolean,

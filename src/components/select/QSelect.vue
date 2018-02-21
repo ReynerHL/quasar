@@ -17,6 +17,7 @@
     :before="before"
     :after="after"
     :color="color"
+    :no-parent-field="noParentField"
 
     :focused="focused"
     focusable
@@ -50,16 +51,13 @@
       </q-chip>
     </div>
 
-    <input
+    <div
       v-else
-      class="col q-input-target cursor-inherit non-selectable no-pointer-events"
-      :class="alignClass"
-      :value="actualValue"
-      :placeholder="inputPlaceholder"
-      readonly
-      :disabled="this.disable"
-      tabindex="-1"
-    />
+      class="col q-input-target ellipsis"
+      :class="fakeInputClasses"
+    >
+      {{ fakeInputValue }}
+    </div>
 
     <q-icon
       v-if="!disable && !readonly && clearable && length"
@@ -91,11 +89,13 @@
         :color="color"
         :dark="dark"
         no-parent-field
-        icon="filter_list"
-        style="min-height: 50px; padding: 10px;"
+        no-icon
+        class="col-auto"
+        style="padding: 10px;"
       />
 
       <q-list
+        v-if="visibleOptions.length"
         :separator="separator"
         :dark="dark"
         class="no-border scroll"
@@ -330,10 +330,16 @@ export default {
     },
 
     __keyboardCalcIndex () {
-      this.keyboardMoveDirection = true
       this.keyboardIndex = -1
       const sel = this.multiple ? this.selectedOptions.map(o => o.value) : [this.model]
-      this.$nextTick(() => this.__keyboardShow(sel === void 0 ? 0 : Math.max(0, this.visibleOptions.findIndex(opt => sel.includes(opt.value)))))
+      this.$nextTick(() => {
+        const index = sel === void 0 ? -1 : Math.max(-1, this.visibleOptions.findIndex(opt => sel.includes(opt.value)))
+        if (index > -1) {
+          this.keyboardMoveDirection = true
+          setTimeout(() => { this.keyboardMoveDirection = false }, 500)
+          this.__keyboardShow(index)
+        }
+      })
     },
     __keyboardCustomKeyHandle (key, e) {
       switch (key) {

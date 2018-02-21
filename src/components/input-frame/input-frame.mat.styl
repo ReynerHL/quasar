@@ -32,6 +32,10 @@
     &:not(:first-child)
       margin-top 0
 
+.q-if-hide-underline:not(.q-if-inverted)
+  min-height 24px
+  padding-bottom 0
+
 .q-if-focusable
   outline 0
   cursor pointer
@@ -85,15 +89,16 @@
 .q-if-inverted
   min-height 38px
   border-radius 2px
-  padding-top 8px
-  padding-left 8px
-  padding-right 8px
+  padding 8px
   box-shadow $shadow-1
 
   .q-input-target
     color inherit
   .q-if-label, .q-if-addon,  .q-if-control
     color #ddd
+
+div.q-input-target
+  min-width 35px
 
 .q-if-dark
   &:hover:before
@@ -135,3 +140,5 @@
     background-position bottom
     background-size 3px 1px
     background-repeat repeat-x
+  &.q-if-dark:before
+    background-image linear-gradient(90deg, rgba(255, 255, 255, .7) 0, rgba(255, 255, 255, .7) 33%, transparent 0)

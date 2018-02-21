@@ -22,18 +22,17 @@
       :after="after"
       :color="color"
       :align="align"
+      :no-parent-field="noParentField"
 
       :length="queueLength"
       additional-length
     >
-      <input
-        class="col q-input-target cursor-inherit non-selectable no-pointer-events"
+      <div
+        class="col q-input-target ellipsis"
         :class="alignClass"
-        :value="label"
-        readonly
-        :disabled="this.disable"
-        tabindex="-1"
-      />
+      >
+        {{ label }}
+      </div>
 
       <q-spinner
         v-if="uploading"
