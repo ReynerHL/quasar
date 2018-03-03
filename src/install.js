@@ -6,7 +6,7 @@ import './polyfills'
 import i18n from './i18n'
 import icons from './icons'
 
-function addBodyClasses () {
+function bodyInit () {
   const cls = [
     __THEME__,
     Platform.is.desktop ? 'desktop' : 'mobile',
@@ -18,7 +18,17 @@ function addBodyClasses () {
   Platform.is.cordova && cls.push('cordova')
   Platform.is.electron && cls.push('electron')
 
-  document.body.classList.add.apply(document.body.classList, cls)
+  if (Platform.is.ie && Platform.is.versionNumber === 11) {
+    cls.forEach((c) => document.body.classList.add(c))
+  }
+  else {
+    document.body.classList.add.apply(document.body.classList, cls)
+  }
+
+  if (Platform.is.ios) {
+    // needed for iOS button active state
+    document.body.addEventListener('touchstart', () => {})
+  }
 }
 
 export default function (_Vue, opts = {}) {
@@ -39,8 +49,7 @@ export default function (_Vue, opts = {}) {
   icons.install({ $q, Vue: _Vue, iconSet: opts.iconSet })
 
   if (!isSSR) {
-    // inject body classes
-    ready(addBodyClasses)
+    ready(bodyInit)
   }
 
   if (opts.directives) {

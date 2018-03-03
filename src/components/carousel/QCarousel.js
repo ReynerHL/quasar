@@ -33,6 +33,11 @@ export default {
     autoplay: [Number, Boolean],
     handleArrowKeys: Boolean,
     quickNav: Boolean,
+    quickNavPosition: {
+      type: String,
+      default: 'bottom',
+      validator: v => ['top', 'bottom'].includes(v)
+    },
     quickNavIcon: String
   },
   provide () {
@@ -66,8 +71,17 @@ export default {
     }
   },
   computed: {
+    rtlDir () {
+      return this.$q.i18n.rtl ? -1 : 1
+    },
+    arrowIcon () {
+      const ico = [ this.$q.icon.carousel.left, this.$q.icon.carousel.right ]
+      return this.$q.i18n.rtl
+        ? ico.reverse()
+        : ico
+    },
     trackPosition () {
-      return cssTransform(`translateX(${this.position}%)`)
+      return cssTransform(`translateX(${this.rtlDir * this.position}%)`)
     },
     infiniteLeft () {
       return this.infinite && this.slidesNumber > 1 && this.positionSlide < 0
@@ -122,12 +136,14 @@ export default {
       return new Promise((resolve, reject) => {
         let
           direction = '',
+          curSlide = this.slide,
           pos
 
         this.__cleanup()
 
         const finish = () => {
           this.$emit('input', this.slide)
+          this.$emit('slide', this.slide, direction)
           this.$emit('slide-direction', direction)
           this.__planAutoPlay()
           resolve()
@@ -157,6 +173,7 @@ export default {
           }
         }
 
+        this.$emit('slide-trigger', curSlide, this.slide, direction)
         pos = pos * -100
 
         if (!this.animation) {
@@ -201,7 +218,7 @@ export default {
         this.__cleanup()
       }
 
-      let delta = (event.direction === 'left' ? -1 : 1) * event.distance.x
+      let delta = this.rtlDir * (event.direction === 'left' ? -1 : 1) * event.distance.x
 
       if (
         (this.infinite && this.slidesNumber < 2) ||
@@ -213,11 +230,19 @@ export default {
           )
         )
       ) {
-        delta = delta / 10
+        delta = 0
       }
 
-      this.position = this.initialPosition + delta / this.$refs.track.offsetWidth * 100
-      this.positionSlide = (event.direction === 'left' ? this.slide + 1 : this.slide - 1)
+      const
+        pos = this.initialPosition + delta / this.$refs.track.offsetWidth * 100,
+        slidePos = this.slide + this.rtlDir * (event.direction === 'left' ? 1 : -1)
+
+      if (this.position !== pos) {
+        this.position = pos
+      }
+      if (this.positionSlide !== slidePos) {
+        this.positionSlide = slidePos
+      }
 
       if (event.isFinal) {
         this.goToSlide(
@@ -319,8 +344,8 @@ export default {
       }
 
       return h('div', {
-        staticClass: 'q-carousel-quick-nav absolute-bottom scroll text-center',
-        'class': `text-${this.color}`
+        staticClass: 'q-carousel-quick-nav scroll text-center',
+        'class': [`text-${this.color}`, `absolute-${this.quickNavPosition}`]
       }, items)
     }
   },
@@ -360,13 +385,13 @@ export default {
       ]),
       this.arrows ? h(QBtn, {
         staticClass: 'q-carousel-left-arrow absolute',
-        props: { color: this.color, icon: this.$q.icon.carousel.left, fabMini: true, flat: true },
+        props: { color: this.color, icon: this.arrowIcon[0], fabMini: true, flat: true },
         directives: [{ name: 'show', value: this.canGoToPrevious }],
         on: { click: this.previous }
       }) : null,
       this.arrows ? h(QBtn, {
         staticClass: 'q-carousel-right-arrow absolute',
-        props: { color: this.color, icon: this.$q.icon.carousel.right, fabMini: true, flat: true },
+        props: { color: this.color, icon: this.arrowIcon[1], fabMini: true, flat: true },
         directives: [{ name: 'show', value: this.canGoToNext }],
         on: { click: this.next }
       }) : null,

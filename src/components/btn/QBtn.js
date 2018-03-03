@@ -109,7 +109,7 @@ export default {
   },
   render (h) {
     return h('button', {
-      staticClass: 'q-btn inline relative-position',
+      staticClass: 'q-btn inline relative-position q-btn-item non-selectable',
       'class': this.classes,
       style: this.style,
       attrs: { tabindex: this.computedTabIndex },
@@ -121,7 +121,7 @@ export default {
         }]
         : null
     }, [
-      this.$q.platform.is.desktop
+      __THEME__ === 'ios' || this.$q.platform.is.desktop
         ? h('div', { staticClass: 'q-focus-helper' })
         : null,
 

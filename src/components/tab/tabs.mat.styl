@@ -31,27 +31,26 @@
   text-transform $tabs-text-transform
 
   > .q-icon + .q-tab-label
-    margin-top 7px
-  .q-tab-label
-    text-align center
-
-  &.icon-and-label:not(.hide-icon):not(.hide-label)
-    padding $tabs-padding-with-icon
-    min-height $tabs-min-height-with-icon
-
-  .q-tab-icon
-    font-size $tabs-icon-font-size
+    margin-top 4px
 
   .q-chip
     top 5px
     right 0
-    left initial
+    left auto
+    min-height auto
+    padding 2px 6px
     color white
     background alpha($dot-color, .75)
 
   &.active
     .q-tab-icon, .q-tab-label
       opacity 1
+
+.q-tab-label
+  text-align center
+
+.q-tab-icon
+  font-size $tabs-icon-font-size
 
 @media (max-width $breakpoint-sm-max)
   .q-tab
@@ -67,7 +66,7 @@
       flex 1 1 auto
 
 @media (min-width $breakpoint-lg-min)
-  .q-tab, .q-tab.icon-and-label:not(.hide-icon):not(.hide-label)
+  .q-tab
     padding-left $tabs-big-screen-horiz-padding
     padding-right $tabs-big-screen-horiz-padding
   .q-tabs-head:not(.scrollable)
@@ -92,6 +91,7 @@
   height 100%
   cursor pointer
   color white
+  top 0
   .q-icon
     text-shadow 0 0 10px black
     font-size (1.2 * $tabs-icon-font-size)
@@ -104,9 +104,9 @@
       visibility visible
 
 .q-tabs-left-scroll
-  left 0
+  left 0 /* rtl:ignore */
 .q-tabs-right-scroll
-  right 0
+  right 0 /* rtl:ignore */
 
 .q-tabs-align-justify
   .q-tabs-scroller, .q-tab

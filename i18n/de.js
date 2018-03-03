@@ -1,4 +1,5 @@
 export default {
+  lang: 'de',
   label: {
     clear: 'Leeren',
     ok: 'Ok',
@@ -31,10 +32,16 @@ export default {
     noData: 'Keine Daten vorhanden.',
     noResults: 'Keine Einträge gefunden',
     loading: 'Lade...',
-    selectedRows: rows => rows > 1 ? `${rows} ausgewählte Zeilen` : `${rows === 0 ? 'Keine' : '1'} ausgewahlt.`,
+    selectedRows: function (rows) {
+      return rows > 1
+        ? rows + ' ausgewählte Zeilen'
+        : (rows === 0 ? 'Keine' : '1') + ' ausgewählt.'
+    },
     rowsPerPage: 'Zeilen pro Seite',
     allRows: 'Alle',
-    pagination: (start, end, total) => `${start}-${end} von ${total}`,
+    pagination: function (start, end, total) {
+      return start + '-' + end + ' von ' + total
+    },
     columns: 'Spalten'
   },
   editor: {
